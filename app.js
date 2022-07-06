@@ -6,7 +6,6 @@ var usersRouter = require('./app/routes/users');
 
 var app = express();
 
-app.use(express.json())
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
