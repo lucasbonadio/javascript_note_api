@@ -16,6 +16,20 @@ router.post('/', WithAuth, async (req, res) => {
     }
 })
 
+router.get('/search', WithAuth, async (req, res) => {
+    const { query } = req.query;
+
+    try {
+        let notes = await Note
+            .find({ author: req.user._id })
+            .find({ $text: { $search: query } })
+        res.json(notes);
+    } catch (error) {
+        res.json({ error: error }).status(500);
+    }
+});
+
+
 router.get('/:id', WithAuth, async (req, res) => {
     try {
         const { id } = req.params;
@@ -37,7 +51,8 @@ router.get('/', WithAuth, async (req, res) => {
     } catch (error) {
         res.status(500).json({ error: "Problem to get the notes" })
     }
-})
+});
+
 
 router.put('/:id', WithAuth, async (req, res) => {
     const { title, body } = req.body
@@ -64,14 +79,14 @@ router.delete('/:id', WithAuth, async (req, res) => {
 
     try {
         let note = await Note.findById(id);
-        if(isOwner(req.user, note)) {
+        if (isOwner(req.user, note)) {
             await note.delete();
-            res.json({message: "Note deleted with successful"})
+            res.json({ message: "Note deleted with successful" })
         } else {
-            res.status(403).json({error: "Permission denied"})
+            res.status(403).json({ error: "Permission denied" })
         }
     } catch (error) {
-        res.status(500).json({error: "Problem to delete a note"})
+        res.status(500).json({ error: "Problem to delete a note" })
     }
 })
 
